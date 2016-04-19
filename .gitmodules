@@ -1,0 +1,3 @@
+[submodule "peimage"]
+	path = peimage
+	url = https://github.com/vdisasm/pe-image-for-delphi
