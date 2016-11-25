@@ -8,8 +8,15 @@ uses
   System.SysUtils;
 
 type
+  TImpDispatchType =
+  (
+    Jump, // FF25..
+    Call  // FF15..
+  );
+
   // List of addresses referencing same function.
   TImp = record
+    dispType: TImpDispatchType;
     srcVA: uint64;
     iatIndex: uint32;
   end;
@@ -77,7 +84,7 @@ begin
   end;
 end;
 
-procedure AddFunc(va: uint64; const lib, func: string; Libs: TLibs);
+procedure AddFunc(va: uint64; const lib, func: string; Libs: TLibs; call: boolean);
 var
   libName: string;
   funcs: TFuncs;
@@ -110,6 +117,7 @@ var
   words: TStringList;
   libFunc: TArray<string>;
   va: uint64;
+  isCall: boolean;
 begin
   sl := TStringList.Create;
   words := TStringList.Create;
@@ -123,8 +131,9 @@ begin
         libFunc := words[2].Split(['.']);
         if (length(libFunc) = 2) then
         begin
+          isCall := words[1].ToUpper().StartsWith('CALL');
           va := uint64(StrToInt64('$' + words[0]));
-          AddFunc(va, libFunc[0], libFunc[1], Libs);
+          AddFunc(va, libFunc[0], libFunc[1], Libs, isCall);
         end;
       end;
     end;

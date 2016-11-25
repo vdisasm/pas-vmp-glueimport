@@ -26,6 +26,7 @@ uses
 procedure generate_new_imports(img: TPEImage; Libs: TLibs);
 const
   opcJmpPtr: word = $25FF;
+  opcCallPtr: word = $15FF;
 var
   libPair: TLibPair;
   funcPair: TFuncPair;
@@ -82,7 +83,15 @@ begin
     begin
       // jmp dword ptr [...]
       img.PositionVA := rec.srcVA;
-      img.Write(opcJmpPtr, sizeof(opcJmpPtr));
+
+      if (rec.dispType = TImpDispatchType.Jump) then
+      begin
+        img.Write(opcJmpPtr, sizeof(opcJmpPtr));
+      end
+      else
+      begin
+        img.Write(opcCallPtr, sizeof(opcCallPtr));
+      end;
 
       // address
       tmpVA := iatVA + rec.iatIndex * img.ImageWordSize;
