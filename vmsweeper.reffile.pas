@@ -104,6 +104,11 @@ begin
     funcs.Add(func, list);
   end;
 
+  if (call) then
+    rec.dispType := TImpDispatchType.Call
+  else
+    rec.dispType := TImpDispatchType.Jump;
+
   rec.srcVA := va;
   rec.iatIndex := 0;
 
