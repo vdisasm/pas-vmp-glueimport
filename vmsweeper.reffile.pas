@@ -110,6 +110,13 @@ begin
   list.Add(rec);
 end;
 
+function IsStatusDoneOrProcessing(txt: string): boolean; inline;
+begin
+  txt := txt.ToUpper();
+  result := txt.Equals('DONE') or
+            txt.Equals('PROCESSING');
+end;
+
 procedure ParseImportsFromRefFile(const RefFileName: string; Libs: TLibs);
 var
   sl: TStringList;
@@ -126,7 +133,7 @@ begin
     for i := 0 to sl.Count - 1 do
     begin
       SplitWords(sl[i], words);
-      if (words.Count = 4) and words[3].Equals('Done') and IsHex(words[0]) then
+      if (words.Count = 4) and IsStatusDoneOrProcessing(words[3]) and IsHex(words[0]) then
       begin
         libFunc := words[2].Split(['.']);
         if (length(libFunc) = 2) then
