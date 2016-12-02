@@ -38,6 +38,7 @@ var
   rec: TImp;
   FlatImpList: TImpList;
   iatDir: TImageDataDirectory;
+  ordinal: integer;
 begin
 
   FlatImpList := TImpList.Create;
@@ -54,7 +55,21 @@ begin
       lib := img.imports.NewLib(libPair.Key);
       for funcPair in libPair.Value do
       begin
-        lib.NewFunction(funcPair.Key);
+        if (funcPair.Key.StartsWith('#')) then
+        begin
+          // By ordinal.
+          if (not integer.TryParse(funcPair.Key.Substring(1), ordinal)) then
+          begin
+            Writeln('Ordinal not parsed: ', libPair.Key, ', ordinal ', funcPair.Key);
+            continue;
+          end;
+          lib.NewFunction(ordinal);
+        end
+        else
+        begin
+          // By name.
+          lib.NewFunction(funcPair.Key);
+        end;
 
         imps := funcPair.Value;
         for i := 0 to imps.Count - 1 do
